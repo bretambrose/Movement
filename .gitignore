@@ -1,0 +1,9 @@
+*.user
+*.suo
+Movement/Run/*.exe
+Movement/Run/*.dll
+Movement/Run/*.pdb
+Movement/Run/Logs/
+Movement/Run/Crashes/
+
+
