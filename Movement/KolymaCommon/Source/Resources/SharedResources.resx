@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Text_Shared_Begin_Internal_Tests" xml:space="preserve">
+    <value>Starting internal testing</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Browse" xml:space="preserve">
+    <value>browse</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Chat" xml:space="preserve">
+    <value>chat</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Debug" xml:space="preserve">
+    <value>debug</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Lobby" xml:space="preserve">
+    <value>lobby</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Logging" xml:space="preserve">
+    <value>Logging</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Match" xml:space="preserve">
+    <value>match</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_MatchUI" xml:space="preserve">
+    <value>matchui</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Network" xml:space="preserve">
+    <value>network</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_ProcessControl" xml:space="preserve">
+    <value>processcontrol</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Quickmatch" xml:space="preserve">
+    <value>quickmatch</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Social" xml:space="preserve">
+    <value>social</value>
+  </data>
+  <data name="Text_Shared_CommandGroup_Test" xml:space="preserve">
+    <value>test</value>
+  </data>
+  <data name="Text_Shared_Command_Help_Param_CommandGroupOrName" xml:space="preserve">
+    <value>Command Group Or Name</value>
+  </data>
+  <data name="Text_Shared_Command_Name_Crash" xml:space="preserve">
+    <value>crash</value>
+  </data>
+  <data name="Text_Shared_Command_Name_Help" xml:space="preserve">
+    <value>help</value>
+  </data>
+  <data name="Text_Shared_Command_Name_SetLogLevel" xml:space="preserve">
+    <value>setloglevel</value>
+  </data>
+  <data name="Text_Shared_Command_SetLogLevel_Param_Level" xml:space="preserve">
+    <value>Logging level</value>
+  </data>
+  <data name="Text_Shared_End_Internal_Tests" xml:space="preserve">
+    <value>Internal testing completed successfully</value>
+  </data>
+  <data name="Text_Shared_Help" xml:space="preserve">
+    <value>To get help for a specific command, use\n\t/help [command]\n\nTo get help for a group of commands, use\n\t/help [command group name]\n\nAvailable command groups:\n\n\t{0} </value>
+    <comment>0 = List of command groups</comment>
+  </data>
+  <data name="Text_Shared_Help_Bad_Input" xml:space="preserve">
+    <value>Unknown command group or name: '{0}'\n\n{1}</value>
+    <comment>0 = player's input, 1 = the string from Text_Shared_Help</comment>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Browse" xml:space="preserve">
+    <value>Commands in this group allow you to browse through the set of open lobbies.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Chat" xml:space="preserve">
+    <value>Commands in this group help you communicate with other players.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Commands" xml:space="preserve">
+    <value>\n\nAdditional help available for commands:\n\n\t{0}</value>
+    <comment>0 = List of commands in this command group</comment>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Debug" xml:space="preserve">
+    <value>Commands in this group are used for debugging.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Lobby" xml:space="preserve">
+    <value>Commands in this group are operations for creating, joining, and finding lobbies, as well as manipulating their state.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Logging" xml:space="preserve">
+    <value>Commands in this group allow you to adjust the logging properties of the process.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Match" xml:space="preserve">
+    <value>Commands in this group allow you to perform game operations.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_MatchUI" xml:space="preserve">
+    <value>Commands in this group perform game play actions through the client UI thread.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Network" xml:space="preserve">
+    <value>Commands in this group control the client connection to the server.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_ProcessControl" xml:space="preserve">
+    <value>Commands in this group allow you to control the execution flow of the process.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Quickmatch" xml:space="preserve">
+    <value>Commands in this group enable players to quickly create games without going through the lobby process.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Social" xml:space="preserve">
+    <value>Commands in this group help you interact with other players.</value>
+  </data>
+  <data name="Text_Shared_Help_CommandGroup_Test" xml:space="preserve">
+    <value>Commands in this group are used to test things.  Most commands will have no help or documentation.</value>
+  </data>
+  <data name="Text_Shared_Help_Command_Crash" xml:space="preserve">
+    <value>Causes the process to crash immediately.</value>
+  </data>
+  <data name="Text_Shared_Help_Command_Help" xml:space="preserve">
+    <value>Gives information about a command or a group of commands.</value>
+  </data>
+  <data name="Text_Shared_Help_Command_SetLogLevel" xml:space="preserve">
+    <value>Sets the current logging level of this process</value>
+  </data>
+  <data name="Text_Shared_Help_No_Help_For_Command" xml:space="preserve">
+    <value>Unfortunately, no help is available for this command.  *sadface*</value>
+  </data>
+  <data name="Text_Shared_Help_Optional" xml:space="preserve">
+    <value> (optional)</value>
+  </data>
+  <data name="Text_Shared_Help_Usage_Command" xml:space="preserve">
+    <value>  Usage: /{0}</value>
+    <comment>0 = usage help string</comment>
+  </data>
+  <data name="Text_Shared_Multiple_Commands_Matched" xml:space="preserve">
+    <value>Keyword ({0}) matches multiple commands.</value>
+    <comment>0 = Keyword</comment>
+  </data>
+  <data name="Text_Shared_Slash_Command_Missing_Parameter" xml:space="preserve">
+    <value>Missing required parameter.</value>
+  </data>
+  <data name="Text_Shared_Unable_To_Parse_Parameter" xml:space="preserve">
+    <value>Unable to parse value ({0}) for parameter ({1}) at index {2} of type ({3}) on command ({4})</value>
+  </data>
+  <data name="Text_Shared_Unable_To_Parse_Slash_Command" xml:space="preserve">
+    <value>Unable to parse slash command.</value>
+  </data>
+  <data name="Text_Shared_Undocumented_Parameter" xml:space="preserve">
+    <value>undocumented parameter</value>
+  </data>
+  <data name="Text_Shared_Unknown_Command" xml:space="preserve">
+    <value>Unknown command: {0}</value>
+    <comment>0 = Command</comment>
+  </data>
+  <data name="Text_Shared_Unknown_Player" xml:space="preserve">
+    <value>'Unknown Player'({0})</value>
+    <comment>0 = player id</comment>
+  </data>
+</root>
