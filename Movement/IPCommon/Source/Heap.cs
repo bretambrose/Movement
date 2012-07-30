@@ -22,11 +22,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace NKolymaCommon
+namespace NIPCommon
 {
-	public sealed class EmptyHeapException : Exception
+	public sealed class CEmptyHeapException : Exception
 	{
-		public EmptyHeapException() {}
+		public CEmptyHeapException() {}
 		
 		public override string ToString()
 		{
@@ -49,7 +49,7 @@ namespace NKolymaCommon
 		{
 			if ( Empty )
 			{
-				throw new EmptyHeapException();
+				throw new CEmptyHeapException();
 			}
 			
 			return m_HeapVector[ 1 ];
@@ -59,7 +59,7 @@ namespace NKolymaCommon
 		{
 			if ( Empty )
 			{
-				throw new EmptyHeapException();
+				throw new CEmptyHeapException();
 			}
 
 			T top_spot = m_HeapVector[ 1 ];

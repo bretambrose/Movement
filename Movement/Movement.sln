@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KolymaCommon", "KolymaCommon\KolymaCommon.csproj", "{86B4880A-A34B-4E01-B206-A1D9F2790CC2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCommon", "IPCommon\IPCommon.csproj", "{86B4880A-A34B-4E01-B206-A1D9F2790CC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

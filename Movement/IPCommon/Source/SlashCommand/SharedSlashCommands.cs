@@ -1,6 +1,6 @@
 ﻿/*
 
-	ConncurentQueues.cs
+	SharedSlashCommands.cs
 
 	(c) Copyright 2010-2011, Bret Ambrose (mailto:bretambrose@gmail.com).
 
@@ -20,40 +20,37 @@
 */
 
 using System;
-using System.Collections.Generic;
 
-namespace NKolymaCommon
+namespace NIPCommon
 {
-	public class CConcurrentQueue< T >
+	[SlashCommandGroup]
+	public enum ECommonSlashCommandGroup
 	{
-		// Construction
-		public CConcurrentQueue()
+		None,
+
+		Debug,
+		Logging,
+		Test
+	}
+
+	[SlashCommand( "Help", "None", AllowSymbols = true )]
+	public class CHelpSlashCommand : CSlashCommand
+	{
+		public CHelpSlashCommand()
+		{
+			CommandGroupOrName = "";
+		}
+						
+		[SlashParam( ESlashCommandParameterType.Optional )]
+		public string CommandGroupOrName { get; private set; }
+	}
+
+	[SlashCommand( "Crash", "Debug" )]
+	public class CCrashSlashCommand : CSlashCommand
+	{
+		public CCrashSlashCommand()
 		{
 		}
-		
-		// Methods
-		// Public interface
-		public void Add( T item )
-		{
-			lock( m_Lock )
-			{
-				m_Queue.Enqueue( item );
-			}
-		}
-		
-		public void Take_All( ICollection< T > dest_collection )
-		{
-			lock( m_Lock )
-			{
-				m_Queue.ShallowCopy( dest_collection );
-				m_Queue.Clear();
-			}
-		}
-		
-		// Fields
-		private Queue< T > m_Queue = new Queue< T >();
-		private object m_Lock = new object();
-		
+						
 	}
 }
-

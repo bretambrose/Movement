@@ -25,42 +25,106 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Text;
 
-namespace NKolymaCommon
+namespace NIPCommon
 {
-	public class SlashCommandException : Exception
+	public class CSlashCommandException : Exception
 	{
-		public SlashCommandException( string exception_info )
+		public CSlashCommandException( string exception_info ) :
+			base( exception_info )
 		{
-			ExceptionInfo = exception_info;
+		}
+	}
+
+	[AttributeUsage( AttributeTargets.Enum )]
+	public class SlashCommandGroupAttribute : Attribute
+	{
+		public SlashCommandGroupAttribute()
+		{
+		}
+	}
+
+	[AttributeUsage( AttributeTargets.Class )]
+	public class SlashCommandAttribute : Attribute 
+	{
+		// Construction
+		public SlashCommandAttribute( string text_id_suffix, string command_group_name ) :
+			base()
+		{
+			TextIDSuffix = text_id_suffix;
+			CommandGroupName = command_group_name.Length > 0 ? command_group_name.ToUpper() : null;
+			AllowSymbols = false;
 		}
 		
-		public string ExceptionInfo { get; private set; }
+		// Properties
+		public string TextIDSuffix { get; private set; }
+		public string CommandGroupName { get; private set; }
+		public bool AllowSymbols { get; set; }
 	}
 	
-	public enum ESlashCommandGroup
+	public enum ESlashCommandParameterType
 	{
-		None,
-
-		Chat,
-		Network,
-		Debug,
-		Lobby,
-		Social,
-		Browse,
-		ProcessControl,
-		Logging,
-		Test,
-		Match,
-		MatchUI,
-		Quickmatch
+		Required,
+		Optional,
+		Ignore
 	}
+	
+	[AttributeUsage( AttributeTargets.Property )]
+	public class SlashParamAttribute : Attribute
+	{
+		// Construction
+		public SlashParamAttribute( ESlashCommandParameterType param_type ) :
+			base()
+		{
+			ParamType = param_type;
+			ConsumeAll = false;
+			AllowQuoted = false;
+		}
+		
+		// Properties
+		public ESlashCommandParameterType ParamType { get; private set; }
+		public bool ConsumeAll { get; set; }
+		public bool AllowQuoted { get; set; }
+	}
+	
+	static public class CSlashCommandTextBuilder
+	{
+		static public string Build_Slash_Command_Group_Help_Text_Key( string command_group_name )
+		{
+			return "Help_CommandGroup_" + command_group_name;
+		}
 
+		static public string Build_Slash_Command_Param_Help_Text_Key( string command_name, string param_name )
+		{
+			return "Command_" + command_name + "_Param_" + param_name;
+		}
+
+		static public string Build_Slash_Command_Help_Text_Key( string command_name )
+		{
+			return "Help_Command_" + command_name;
+		}
+
+		static public string Build_Slash_Command_Text_Key( string command_name )
+		{
+			return "Command_Name_" + command_name;
+		}
+
+		static public string Build_Slash_Command_Shortcut_Text_Key( string command_name )
+		{
+			return "Command_Shortcut_" + command_name;
+		}
+
+		static public string Build_Command_Group_Text_Key( string command_group_name )
+		{
+			return 	"CommandGroup_" + command_group_name;
+		}
+	}
+		
 	public class CSlashCommandGroupInfo
 	{
 		// constructors
-		public CSlashCommandGroupInfo( ESlashCommandGroup command_group )
+		public CSlashCommandGroupInfo( string command_group )
 		{
-			CommandGroup = command_group;
+			CommandGroupName = command_group;
 			Commands = new List< Type >();
 		}
 
@@ -73,17 +137,14 @@ namespace NKolymaCommon
 
 		public void Initialize_Help_String( string command_list_string )
 		{
-			string command_group_name = Enum.GetName( typeof( ESlashCommandGroup ), CommandGroup );
-			ESharedTextID command_group_help_id = (ESharedTextID) Enum.Parse( typeof( ESharedTextID ), "Shared_Help_CommandGroup_" + command_group_name, true );
-
-			string group_help = CSharedResource.Get_Text< ESharedTextID >( command_group_help_id );
-			string command_list = CSharedResource.Get_Text< ESharedTextID >( ESharedTextID.Shared_Help_CommandGroup_Commands );
+			string group_help = CCommonResource.Get_Text( CSlashCommandTextBuilder.Build_Slash_Command_Group_Help_Text_Key( CommandGroupName ) );
+			string command_list = CCommonResource.Get_Text( ECommonTextID.Help_CommandGroup_Commands );
 						
 			HelpText = group_help + String.Format( command_list, command_list_string );		
 		}
 
 		// properties
-		public ESlashCommandGroup CommandGroup { get; private set; }
+		public string CommandGroupName { get; private set; }
 		public List< Type > Commands { get; private set; }
 		public string HelpText { get; private set; }
 	}
@@ -98,17 +159,12 @@ namespace NKolymaCommon
 
 		// Methods
 		// Public interface
-		public void Initialize_Text< T >( string text_id_prefix, string command_text_name ) where T : IConvertible
+		public void Initialize_Text( string command_text_name ) 
 		{
-			try
+			ParamNameText = CCommonResource.Get_Text( CSlashCommandTextBuilder.Build_Slash_Command_Param_Help_Text_Key( command_text_name, ParamInfo.Name ) );
+			if ( ParamNameText == null )
 			{
-				string param_name_text_id_string = text_id_prefix + "_Command_" + command_text_name + "_Param_" + ParamInfo.Name;
-				T text_id = (T) Enum.Parse( typeof( T ), param_name_text_id_string, true );
-				ParamNameText = CSharedResource.Get_Text< T >( text_id );
-			}
-			catch ( Exception )
-			{
-				ParamNameText = CSharedResource.Get_Text< ESharedTextID >( ESharedTextID.Shared_Undocumented_Parameter );
+				ParamNameText = CCommonResource.Get_Text( ECommonTextID.Undocumented_Parameter );
 			}
 		}
 
@@ -130,7 +186,7 @@ namespace NKolymaCommon
 
 		// Methods
 		// Public interface
-		public bool Initialize< T >( Type command_type, string command_name, string command_text_id_suffix, string text_id_prefix ) where T : IConvertible
+		public bool Initialize( Type command_type, string command_name, string command_text_id_suffix )
 		{
 			bool remaining_consumed = false;
 
@@ -162,7 +218,7 @@ namespace NKolymaCommon
 			
 				if ( remaining_consumed )
 				{
-					throw new SlashCommandException( "ERROR: Cannot have additional params after a consume remaining param, in command: " + command_type.Name );
+					throw new CSlashCommandException( "ERROR: Cannot have additional params after a consume remaining param, in command: " + command_type.Name );
 				}
 					
 				string param_group = "param" + current_param.ToString();
@@ -180,13 +236,13 @@ namespace NKolymaCommon
 				}
 
 				CSlashCommandParamInfo param_info = new CSlashCommandParamInfo( prop );
-				param_info.Initialize_Text< T >( text_id_prefix, command_text_id_suffix );
+				param_info.Initialize_Text( command_text_id_suffix );
 
 				if ( is_required )
 				{
 					if ( OptionalParamCount > 0 )
 					{
-						throw new SlashCommandException( "ERROR: required param specified after optional param in slash command: " + command_type.Name );
+						throw new CSlashCommandException( "ERROR: required param specified after optional param in slash command: " + command_type.Name );
 					}
 
 					if ( consume_remaining )
@@ -208,7 +264,7 @@ namespace NKolymaCommon
 				usage_string_builder.Append( param_info.ParamNameText );
 				if ( !is_required )
 				{
-					usage_string_builder.Append( CSharedResource.Get_Text< ESharedTextID >( ESharedTextID.Shared_Help_Optional ) );
+					usage_string_builder.Append( CCommonResource.Get_Text( ECommonTextID.Help_Optional ) );
 				}
 
 				// If the parameter is an enum, then let's add a list of the valid values to the help string
@@ -243,17 +299,15 @@ namespace NKolymaCommon
 			{
 				CSlashCommand type_instance = Activator.CreateInstance( command_type ) as CSlashCommand;
 				
-				string text_id_string = text_id_prefix + "_Help_Command_" + command_attr.TextIDSuffix;			
-				T help_text_id = (T) Enum.Parse( typeof( T ), text_id_string, true );
+				string help_text_id_string = CSlashCommandTextBuilder.Build_Slash_Command_Help_Text_Key( command_attr.TextIDSuffix );			
 
-				string command_help = CSharedResource.Get_Text< T >( help_text_id );
-				string command_usage = CSharedResource.Get_Text< ESharedTextID >( ESharedTextID.Shared_Help_Usage_Command, 
-																										usage_string_builder.ToString() );
+				string command_help = CCommonResource.Get_Text( help_text_id_string );
+				string command_usage = CCommonResource.Get_Text( ECommonTextID.Help_Usage_Command, usage_string_builder.ToString() );
 				HelpText = command_help + "\n\n" + command_usage;			
 			}
 			catch ( Exception )
 			{
-				HelpText = CSharedResource.Get_Text< ESharedTextID >( ESharedTextID.Shared_Help_No_Help_For_Command );
+				HelpText = CCommonResource.Get_Text( ECommonTextID.Help_No_Help_For_Command );
 			}
 
 			return true;
@@ -282,50 +336,64 @@ namespace NKolymaCommon
 
 		// Methods
 		public virtual void On_Command_Name( string command_name ) {}
-		
-		// Properties
-		public virtual ESlashCommandGroup CommandGroup { get { return ESlashCommandGroup.None; } }
 	}
 	
-	[AttributeUsage( AttributeTargets.Class )]
-	public class SlashCommandAttribute : Attribute
+	public class CSlashCommandInstance
 	{
 		// Construction
-		public SlashCommandAttribute( string text_id_suffix ) :
-			base()
+		public CSlashCommandInstance( string input_string )
 		{
-			TextIDSuffix = text_id_suffix;
-			AllowSymbols = false;
+			m_OriginalText = input_string;
 		}
 		
-		// Properties
-		public string TextIDSuffix { get; private set; }
-		public bool AllowSymbols { get; set; }
-	}
-	
-	public enum ESlashCommandParameterType
-	{
-		Required,
-		Optional,
-		Ignore
-	}
-	
-	[AttributeUsage( AttributeTargets.Property )]
-	public class SlashParamAttribute : Attribute
-	{
-		// Construction
-		public SlashParamAttribute( ESlashCommandParameterType param_type ) :
-			base()
+		// Methods
+		public bool Parse( Regex command_parser, int required_params, int max_params )
 		{
-			ParamType = param_type;
-			ConsumeAll = false;
-			AllowQuoted = false;
+			Match m = command_parser.Match( m_OriginalText );
+			if ( !m.Success )
+			{
+				return false;
+			}
+
+			for ( int i = 1; i <= max_params; i++ )
+			{
+				string group_name = "param" + i.ToString();
+				Group group = m.Groups[ group_name ];
+				if ( group == null || !group.Success )
+				{
+					return i > required_params;
+				}
+
+				m_Parameters.Add( group.ToString() );
+			}
+
+			return true;
 		}
-		
+
 		// Properties
-		public ESlashCommandParameterType ParamType { get; private set; }
-		public bool ConsumeAll { get; set; }
-		public bool AllowQuoted { get; set; }
+		public string Command
+		{
+			get
+			{
+				Match m = Regex.Match( m_OriginalText, @"/(\w+).*" );
+				if ( !m.Success )
+				{
+					return null;
+				}
+				else
+				{
+					return m.Groups[ 1 ].ToString();
+				}
+			}
+		}
+
+		public IEnumerable< string > Parameters { get { return m_Parameters; } }
+		public int Count { get { return m_Parameters.Count; } }
+		public string this[ int index ] { get { return m_Parameters[ index ]; } }
+
+		// Fields
+		private string m_OriginalText;
+		private List< string > m_Parameters = new List< string >();
 	}
 
 }

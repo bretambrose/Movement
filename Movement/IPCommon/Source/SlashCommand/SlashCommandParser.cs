@@ -26,7 +26,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace NKolymaCommon
+namespace NIPCommon
 {
 	public class CSlashCommandParser
 	{
@@ -37,9 +37,8 @@ namespace NKolymaCommon
 		
 		// Methods
 		// Public interface
-		public void Initialize_Assembly_Commands< T >( string text_id_prefix, Assembly commands_assembly, T invalid_text_id ) where T : IConvertible
+		public void Initialize_Assembly_Commands( Assembly commands_assembly )
 		{
-			// Assembly commands_assembly = Assembly.GetAssembly( typeof( CSlashCommand ) );
 			foreach ( var type in commands_assembly.GetTypes() )
 			{
 				SlashCommandAttribute command_attr = Attribute.GetCustomAttribute( type, typeof( SlashCommandAttribute ) ) as SlashCommandAttribute;
@@ -48,56 +47,32 @@ namespace NKolymaCommon
 					continue;
 				}
 				
-				string command_name_text_id_name = text_id_prefix + "_Command_Name_" + command_attr.TextIDSuffix;
-				string command_shortcut_text_id_name = text_id_prefix + "_Command_Shortcut_" + command_attr.TextIDSuffix;
+				string command_name_text_id_name = CSlashCommandTextBuilder.Build_Slash_Command_Text_Key( command_attr.TextIDSuffix );
+				string command_shortcut_text_id_name = CSlashCommandTextBuilder.Build_Slash_Command_Shortcut_Text_Key( command_attr.TextIDSuffix );
 
-				T command_name_text_id = invalid_text_id;
-				T command_shortcut_text_id = invalid_text_id;
-
-				try
-				{
-					command_name_text_id = (T) Enum.Parse( typeof( T ), command_name_text_id_name, true );
-					command_shortcut_text_id = (T) Enum.Parse( typeof( T ), command_shortcut_text_id_name, true );
-				}
-				catch ( Exception )
-				{
-					// there is no way to parse for an enum value that may or may not exist without generating an exception.  While blindly swallowing exceptions
-					// is usually a bad idea, in this case it just means that no shortcut is defined for this command which is perfectly valid.  There
-					// really needs to be a way of testing for an enum value's existence or a TryParse method.
-					;
-				}
-
-				string command_name = "";
-				if ( !( command_name_text_id.Equals( invalid_text_id ) ) )
-				{
-					command_name = CSharedResource.Get_Text< T >( command_name_text_id );
-				}
-				else
+				string command_name = CCommonResource.Get_Text( command_name_text_id_name );
+				if ( command_name == null )
 				{
 					command_name = command_attr.TextIDSuffix;
 				}
 
 				string upper_command_name = command_name.ToUpper();
-				string command_shortcut = "";
-				if ( !( command_shortcut_text_id.Equals( invalid_text_id ) ) )
-				{
-					command_shortcut = CSharedResource.Get_Text< T >( command_shortcut_text_id ).ToUpper();
-				}
+				string command_shortcut = CCommonResource.Get_Text( command_shortcut_text_id_name ).ToUpper();
 							
 				if ( upper_command_name.Length == 0 )
 				{
-					throw new SlashCommandException( string.Format( "No command name specified for slash command class \"{0}\"", type.Name ) );
+					throw new CSlashCommandException( string.Format( "No command name specified for slash command class \"{0}\"", type.Name ) );
 				}
 				
 				int numeric_name;
 				if ( Int32.TryParse( upper_command_name, out numeric_name ) )
 				{
-					throw new SlashCommandException( string.Format( "Numeric commands are not allowed: \"{0}\"", type.Name ) );
+					throw new CSlashCommandException( string.Format( "Numeric commands are not allowed: \"{0}\"", type.Name ) );
 				}
 
 				if ( upper_command_name.Equals( command_shortcut ) )
 				{
-					throw new SlashCommandException( string.Format( "Command name and shortcut are the same (\"{0}\") for class \"{1}\"", command_name, type.Name ) );
+					throw new CSlashCommandException( string.Format( "Command name and shortcut are the same (\"{0}\") for class \"{1}\"", command_name, type.Name ) );
 				}
 				
 				Type existing_command_type = null;
@@ -105,39 +80,39 @@ namespace NKolymaCommon
 				if ( Command_Exists( upper_command_name ) )
 				{
 					m_CommandsByName.TryGetValue( upper_command_name, out existing_command_type );
-					throw new SlashCommandException( string.Format( "Command name \"{0}\" for class \"{1}\" already exists as a command name for class \"{2}\"", command_name, type.Name, existing_command_type.Name ) );
+					throw new CSlashCommandException( string.Format( "Command name \"{0}\" for class \"{1}\" already exists as a command name for class \"{2}\"", command_name, type.Name, existing_command_type.Name ) );
 				}
 				
 				if ( Shortcut_Exists( upper_command_name ) )
 				{
 					m_CommandsByShortcut.TryGetValue( upper_command_name, out existing_command_type );
-					throw new SlashCommandException( string.Format( "Command name \"{0}\" for class \"{1}\" already exists as a shortcut for class \"{2}\"", command_name, type.Name, existing_command_type.Name ) );
+					throw new CSlashCommandException( string.Format( "Command name \"{0}\" for class \"{1}\" already exists as a shortcut for class \"{2}\"", command_name, type.Name, existing_command_type.Name ) );
 				}
 
 				if ( command_shortcut.Length > 0 )
 				{
 					if ( Int32.TryParse( command_shortcut, out numeric_name ) )
 					{
-						throw new SlashCommandException( string.Format( "Numeric shortcuts are not allowed: \"{0}\"", type.Name ) );
+						throw new CSlashCommandException( string.Format( "Numeric shortcuts are not allowed: \"{0}\"", type.Name ) );
 					}
 
 					if ( Command_Exists( command_shortcut ) )
 					{
 						m_CommandsByName.TryGetValue( command_shortcut, out existing_command_type );
-						throw new SlashCommandException( string.Format( "Command shortcut \"{0}\" for class \"{1}\" already exists as a command name for class \"{2}\"", command_shortcut, type.Name, existing_command_type.Name ) );
+						throw new CSlashCommandException( string.Format( "Command shortcut \"{0}\" for class \"{1}\" already exists as a command name for class \"{2}\"", command_shortcut, type.Name, existing_command_type.Name ) );
 					}
 									
 					if ( Shortcut_Exists( command_shortcut ) )
 					{
 						m_CommandsByShortcut.TryGetValue( command_shortcut, out existing_command_type );
-						throw new SlashCommandException( string.Format( "Command shortcut \"{0}\" for class \"{1}\" already exists as a shortcut for class \"{2}\"", command_shortcut, type.Name, existing_command_type.Name ) );
+						throw new CSlashCommandException( string.Format( "Command shortcut \"{0}\" for class \"{1}\" already exists as a shortcut for class \"{2}\"", command_shortcut, type.Name, existing_command_type.Name ) );
 					}
 				}
 
 				CSlashCommandInfo command_info = new CSlashCommandInfo();
-				if ( !command_info.Initialize< T >( type, command_name, command_attr.TextIDSuffix, text_id_prefix ) )
+				if ( !command_info.Initialize( type, command_name, command_attr.TextIDSuffix ) )
 				{
-					throw new SlashCommandException( string.Format( "Unable to initialize command info structure for slash command \"{0}\"", type.Name ) );
+					throw new CSlashCommandException( string.Format( "Unable to initialize command info structure for slash command \"{0}\"", type.Name ) );
 				}
 				
 				m_CommandsByName.Add( upper_command_name, type );
@@ -149,29 +124,25 @@ namespace NKolymaCommon
 
 				// Register the command for help purposes
 				CSlashCommand command_instance = Activator.CreateInstance( type ) as CSlashCommand;
-				ESlashCommandGroup command_group = command_instance.CommandGroup;
-				if ( command_group != ESlashCommandGroup.None )
+				string command_group_name = command_attr.CommandGroupName;
+				if ( command_group_name != null )
 				{
 					CSlashCommandGroupInfo command_group_info = null;
-					m_CommandGroupInfos.TryGetValue( command_group, out command_group_info );
+					m_CommandGroupInfos.TryGetValue( command_group_name, out command_group_info );
 					if ( command_group_info == null )
 					{
-						string command_group_text_name = "Shared_CommandGroup_" + Enum.GetName( typeof( ESlashCommandGroup ), command_group );
-						ESharedTextID command_group_text_id = (ESharedTextID) Enum.Parse( typeof( ESharedTextID ), command_group_text_name, true );
-						string command_group_name = CSharedResource.Get_Text< ESharedTextID >( command_group_text_id );
+						string command_group_text_id = CSlashCommandTextBuilder.Build_Command_Group_Text_Key( command_group_name );
+						string command_group_localized_name = CCommonResource.Get_Text( command_group_text_id );
 
-						command_group_info = new CSlashCommandGroupInfo( command_group );
-						m_CommandGroupInfos.Add( command_group, command_group_info );
+						command_group_info = new CSlashCommandGroupInfo( command_group_name );
+						m_CommandGroupInfos.Add( command_group_name, command_group_info );
 
 						if ( m_GroupBuilder.Length != 0 )
 						{
 							m_GroupBuilder.Append( ", " );
 						}
 
-						m_GroupBuilder.Append( command_group_name );
-
-						m_CommandGroupsByName.Add( command_group_name.ToUpper(), command_group );
-
+						m_GroupBuilder.Append( command_group_localized_name );
 					}
 
 					command_group_info.Add_Command( type );
@@ -183,18 +154,17 @@ namespace NKolymaCommon
 		{
 			if ( m_GeneralHelpString == null )
 			{
-				m_GeneralHelpString = String.Format( CSharedResource.Get_Text< ESharedTextID >( ESharedTextID.Shared_Help ), m_GroupBuilder.ToString() );
+				m_GeneralHelpString = String.Format( CCommonResource.Get_Text( ECommonTextID.Help ), m_GroupBuilder.ToString() );
 			}
 
 			foreach ( var group in m_CommandGroupInfos )
 			{
-				ESlashCommandGroup command_group = group.Key;
 				CSlashCommandGroupInfo group_info = group.Value;
 				group_info.Initialize_Help_String( CCommonUtils.Build_String_List( group_info.Commands, n => m_CommandInfos[ n ].CommandName ) );
 			}
 		}
 
-		public bool Try_Parse( CUIInputSlashCommandRequest command_request, out CSlashCommand command, out string error_string )
+		public bool Try_Parse( CSlashCommandInstance command_request, out CSlashCommand command, out string error_string )
 		{
 			command = null;
 			error_string = "";
@@ -229,21 +199,22 @@ namespace NKolymaCommon
 		{
 			if ( command_group_or_name != null && command_group_or_name.Length > 0 )
 			{
+				string upper_command_group_or_name = command_group_or_name.ToUpper();
 
-				ESlashCommandGroup command_group = ESlashCommandGroup.None;
-				if ( m_CommandGroupsByName.TryGetValue( command_group_or_name, out command_group ) )
+				CSlashCommandGroupInfo command_group_info = null;
+				if ( m_CommandGroupInfos.TryGetValue( upper_command_group_or_name, out command_group_info ) )
 				{
-					return m_CommandGroupInfos[ command_group ].HelpText;
+					return command_group_info.HelpText;
 				}
 
 				// ok we tried to turn the string into a command group and failed, let's see if it's a command instead
 				Type command_type = null;
-				if ( m_CommandsByName.TryGetValue( command_group_or_name, out command_type ) )
+				if ( m_CommandsByName.TryGetValue( upper_command_group_or_name, out command_type ) )
 				{
 					return m_CommandInfos[ command_type ].HelpText;
 				}
 
-				return CSharedResource.Get_Text< ESharedTextID >( ESharedTextID.Shared_Help_Bad_Input, command_group_or_name, m_GeneralHelpString ); 
+				return CCommonResource.Get_Text( ECommonTextID.Help_Bad_Input, command_group_or_name, m_GeneralHelpString ); 
 			}
 
 			// No command group or name, list all command groups
@@ -251,12 +222,12 @@ namespace NKolymaCommon
 		}
 			
 		// Private interface
-		private bool Parse_Parameters( CUIInputSlashCommandRequest command_request, CSlashCommand command, ref string error_string )
+		private bool Parse_Parameters( CSlashCommandInstance command_request, CSlashCommand command, ref string error_string )
 		{
 			CSlashCommandInfo command_info = Get_Command_Info( command.GetType() );
 			if ( !command_request.Parse( command_info.CommandParser, command_info.RequiredParamCount, command_info.RequiredParamCount + command_info.OptionalParamCount ) )
 			{
-				error_string =	CSharedResource.Get_Text( ESharedTextID.Shared_Unable_To_Parse_Slash_Command );
+				error_string =	CCommonResource.Get_Text( ECommonTextID.Unable_To_Parse_Slash_Command );
 				return false;
 			}
 
@@ -267,7 +238,7 @@ namespace NKolymaCommon
 				{
 					if ( current_parsed_param < command_info.RequiredParamCount )
 					{
-						error_string =	CSharedResource.Get_Text( ESharedTextID.Shared_Slash_Command_Missing_Parameter );
+						error_string =	CCommonResource.Get_Text( ECommonTextID.Slash_Command_Missing_Parameter );
 						return false;
 					}
 
@@ -280,7 +251,7 @@ namespace NKolymaCommon
 				object param_value = Parse_Parameter( prop_info, param_string_value );			
 				if ( param_value == null )
 				{
-					error_string = string.Format( CSharedResource.Get_Text( ESharedTextID.Shared_Unable_To_Parse_Parameter ),
+					error_string = string.Format( CCommonResource.Get_Text( ECommonTextID.Unable_To_Parse_Parameter ),
 															param_string_value, 
 															prop_info.Name, 
 															current_parsed_param, 
@@ -377,12 +348,12 @@ namespace NKolymaCommon
 				}
 				else
 				{
-					error_string = CSharedResource.Get_Text( ESharedTextID.Shared_Unknown_Command, command_name );
+					error_string = CCommonResource.Get_Text( ECommonTextID.Unknown_Command, command_name );
 					return null;
 				}
 			}
 			
-			error_string = CSharedResource.Get_Text( ESharedTextID.Shared_Multiple_Commands_Matched, command_name );
+			error_string = CCommonResource.Get_Text( ECommonTextID.Multiple_Commands_Matched, command_name );
 			return null;		
 		}
 		
@@ -409,24 +380,12 @@ namespace NKolymaCommon
 			return command_info;
 		}
 
-		private CSlashCommandGroupInfo Get_Command_Group_Info( ESlashCommandGroup command_group )
+		private CSlashCommandGroupInfo Get_Command_Group_Info( string command_group_name )
 		{
 			CSlashCommandGroupInfo command_group_info = null;
-			m_CommandGroupInfos.TryGetValue( command_group, out command_group_info );
+			m_CommandGroupInfos.TryGetValue( command_group_name.ToUpper(), out command_group_info );
 
 			return command_group_info;
-		}
-
-		// Slash command handlers
-		[GenericHandler]
-		public static void Handle_Help_Request( CHelpSlashCommand help_request )
-		{
-			string help_string = Instance.Get_Help_String( help_request.CommandGroupOrName.ToUpper() );
-
-			if ( help_string != null )
-			{
-				CSharedResource.Output_Text_By_Category( ETextOutputCategory.Request_Result, help_string );
-			}
 		}
 
 		// Properties
@@ -436,11 +395,10 @@ namespace NKolymaCommon
 		private static CSlashCommandParser m_Instance = new CSlashCommandParser();
 		
 		private Dictionary< Type, CSlashCommandInfo > m_CommandInfos = new Dictionary< Type, CSlashCommandInfo >();
-		private Dictionary< ESlashCommandGroup, CSlashCommandGroupInfo > m_CommandGroupInfos = new Dictionary< ESlashCommandGroup, CSlashCommandGroupInfo >();
+		private Dictionary< string, CSlashCommandGroupInfo > m_CommandGroupInfos = new Dictionary< string, CSlashCommandGroupInfo >();
 
 		private Dictionary< string, Type > m_CommandsByName = new Dictionary< string, Type >();
 		private Dictionary< string, Type > m_CommandsByShortcut = new Dictionary< string, Type >();
-		private Dictionary< string, ESlashCommandGroup > m_CommandGroupsByName = new Dictionary< string, ESlashCommandGroup >();
 
 		private string m_GeneralHelpString = null;
 		private StringBuilder m_GroupBuilder = new StringBuilder();

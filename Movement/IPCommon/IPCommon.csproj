@@ -50,7 +50,7 @@
     <Compile Include="Source\Resources\SharedResources.Designer.cs" />
     <Compile Include="Source\SlashCommand\SharedSlashCommands.cs" />
     <Compile Include="Source\SlashCommand\SlashCommand.cs" />
-    <Compile Include="Source\SlashCommand\SlashCommandManager.cs" />
+    <Compile Include="Source\SlashCommand\SlashCommandParser.cs" />
     <Compile Include="Source\LinqUtils.cs" />
   </ItemGroup>
   <ItemGroup>

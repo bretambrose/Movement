@@ -23,7 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace NKolymaCommon
+namespace NIPCommon
 {
 	public delegate void DGenericHandler< T >( T handleable );
 
@@ -34,6 +34,13 @@ namespace NKolymaCommon
 			base()
 		{
 		}
+	}
+
+	public class CHandlerException : Exception
+	{
+		public CHandlerException( string message ) :
+			base( message )
+		{}
 	}
 
 	public class CGenericHandlerManager
@@ -72,7 +79,7 @@ namespace NKolymaCommon
 					ParameterInfo[] parameters = method_info.GetParameters();
 					if ( parameters.Length != 1 )
 					{
-						throw new CApplicationException( String.Format( "Handler function {0} in type {1} has the incorrect number of arguments (must be 1).", method_info.Name, type.Name ) );
+						throw new CHandlerException( String.Format( "Handler function {0} in type {1} has the incorrect number of arguments (must be 1).", method_info.Name, type.Name ) );
 					}
 
 					// make sure the parameter type derives from CSlashCommand
@@ -86,7 +93,7 @@ namespace NKolymaCommon
 					// make sure we haven't already registered a handler for this slash command
 					if ( Handler_Exists( parameter_type ) )
 					{
-						throw new CApplicationException( String.Format( "Duplicate slash command handler detected for command ({0})!", parameter_type.Name ) );
+						throw new CHandlerException( String.Format( "Duplicate slash command handler detected for command ({0})!", parameter_type.Name ) );
 					}
 
 					// Scarrrrrrryyyyy stuff
@@ -116,7 +123,7 @@ namespace NKolymaCommon
 
 							if ( instance_property_info == null )
 							{
-								throw new CApplicationException( String.Format( "Non-static handler {0} in type {1} for class {2} must belong to a singleton class with a static Instance or BaseInstance property getter.", method_info.Name, type.Name, parameter_type.Name ) );
+								throw new CHandlerException( String.Format( "Non-static handler {0} in type {1} for class {2} must belong to a singleton class with a static Instance or BaseInstance property getter.", method_info.Name, type.Name, parameter_type.Name ) );
 							}
 						}
 
@@ -135,7 +142,7 @@ namespace NKolymaCommon
 
 					if ( generic_handler == null )
 					{
-						throw new CApplicationException( String.Format( "Unable to build handler for class {0}.", parameter_type.Name ) );
+						throw new CHandlerException( String.Format( "Unable to build handler for class {0}.", parameter_type.Name ) );
 					}
 
 					m_Handlers.Add( parameter_type, generic_handler );
@@ -148,7 +155,7 @@ namespace NKolymaCommon
 			Type command_type = typeof( T );
 			if ( Handler_Exists( command_type ) )
 			{
-				throw new CApplicationException( String.Format( "Duplicate handler detected for type ({0})!", command_type.Name ) );
+				throw new CHandlerException( String.Format( "Duplicate handler detected for type ({0})!", command_type.Name ) );
 			}
 
 			DGenericHandler< object > generic_handler = delegate( object handleable ) { handler( handleable as T ); };

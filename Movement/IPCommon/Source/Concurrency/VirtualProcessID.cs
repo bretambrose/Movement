@@ -22,7 +22,7 @@
 using System;
 using System.Globalization;
 
-namespace NKolymaCommon
+namespace NIPCommon
 {
 	public enum EProcessSubID : ushort
 	{
@@ -33,11 +33,6 @@ namespace NKolymaCommon
 
 	public struct SVirtualProcessID< T > where T : struct, IConvertible 
 	{
-		public SVirtualProcessID() 
-		{ 
-			m_PID = 0; 
-		}
-
 		public SVirtualProcessID( T subject, EProcessSubID primary_id = EProcessSubID.First, EProcessSubID major_id = EProcessSubID.First, EProcessSubID minor_id = EProcessSubID.First )
 		{
 			if ( !typeof( T ).IsEnum )

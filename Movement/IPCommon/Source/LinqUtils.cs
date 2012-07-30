@@ -23,7 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NKolymaCommon
+namespace NIPCommon
 {
 	public static class CCommonUtils
 	{
