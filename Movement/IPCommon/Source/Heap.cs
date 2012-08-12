@@ -38,13 +38,6 @@ namespace NIPCommon
 		{}
 	}
 	
-	public sealed class CIncomparableHeapTypeParameterException< T > : Exception
-	{
-		public CIncomparableHeapTypeParameterException() :
-			base( string.Format( "Heap generic parameter type class {0} does not implement IComparable and no comparison delegate was supplied", typeof( T ).Name ) )
-		{}
-	}
-
 	public sealed class CUnindexableHeapTypeParameterException< T > : Exception
 	{
 		public CUnindexableHeapTypeParameterException() :
@@ -134,7 +127,7 @@ namespace NIPCommon
 			Heapify_Up( Size );
 		}
 
-		void Remove( T element )
+		public void Remove( T element )
 		{
 			if ( !TracksIndices )
 			{
@@ -143,6 +136,16 @@ namespace NIPCommon
 
 			IIndexableHeapElement indexed_element = element as IIndexableHeapElement;
 			int index = indexed_element.Get_Heap_Index();
+			if ( index == 0 )
+			{
+				return;
+			}
+
+			if ( index < 0 || index > Size )
+			{
+				throw new CCorruptedHeapRemoveException();
+			}
+
 			if ( m_Comparator( m_HeapVector[ index ], element ) != 0 )
 			{
 				throw new CCorruptedHeapRemoveException();
@@ -155,8 +158,11 @@ namespace NIPCommon
 			m_IndexSetter( size, 0 );
 			m_HeapVector.RemoveAt( size );
 
-			Heapify_Up( index );
-			Heapify_Down( index );
+			if ( index != size )
+			{
+				Heapify_Up( index );
+				Heapify_Down( index );
+			}
 		}
 
 		public void Clear()
